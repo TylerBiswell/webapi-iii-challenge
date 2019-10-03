@@ -15,11 +15,19 @@ router.post('/', (req, res) => {
     });
 });
 
-// router.post('/:id/posts', validateUserId, (req, res) => {
-//   Posts.insert()
-//     .then()
-//     .catch();
-// });
+// Endpoint to Create (POST) post by user ID - DONE
+router.post('/:id/posts', validateUserId, (req, res) => {
+    const postInfo = { ...req.body, user_id: req.params.id };
+  
+    Posts.insert(postInfo)
+      .then(post => {
+        res.status(210).json(post);
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({ message: 'Error adding the post for the user' });
+      });
+  });
 
 // Endpoint to Retrieve (GET) users - DONE
 router.get('/', (req, res) => {
