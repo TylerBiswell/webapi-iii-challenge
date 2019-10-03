@@ -65,11 +65,22 @@ router.delete('/:id', validateUserId, (req, res) => {
     });
 });
 
-// router.put('/:id', validateUserId, (req, res) => {
-//   Users.update()
-//     .then()
-//     .catch();
-// });
+router.put('/:id', validateUserId, (req, res) => {
+    Users.update(req.params.id, req.body)
+      .then(user => {
+        if (user) {
+          res.status(200).json(user);
+        } else {
+          res.status(404).json({ message: 'The hub could not be found' });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({
+          message: 'Error updating the user',
+        });
+      });
+  });
 
 //custom middleware
 function validateUserId(req, res, next) {
