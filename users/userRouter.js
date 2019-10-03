@@ -1,6 +1,7 @@
 const express = require('express');
 
 const Users = require('./userDb');
+const Posts = require('../posts/postDb');
 
 const router = express.Router();
 
@@ -13,7 +14,11 @@ router.post('/', (req, res) => {
     });
 });
 
-// router.post('/:id/posts', validateUserId, (req, res) => {});
+// router.post('/:id/posts', validateUserId, (req, res) => {
+//   Posts.insert()
+//     .then()
+//     .catch();
+// });
 
 router.get('/', (req, res) => {
   Users.get(req.query)
@@ -39,11 +44,32 @@ router.get('/:id', validateUserId, (req, res) => {
     });
 });
 
-// router.get('/:id/posts', validateUserId, (req, res) => {});
+// router.get('/:id/posts', validateUserId, (req, res) => {
+//   Users.getUserPosts()
+//     .then()
+//     .catch();
+// });
 
-// router.delete('/:id', validateUserId, (req, res) => {});
+router.delete('/:id', validateUserId, (req, res) => {
+  Users.remove(req.params.id)
+    .then(count => {
+      if (count > 0) {
+        res.status(200).json({ message: 'The user has been deleted' });
+      } else {
+        res.status(404).json({ message: 'The user could not be found' });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ message: 'Error removing the user' });
+    });
+});
 
-// router.put('/:id', validateUserId, (req, res) => {});
+// router.put('/:id', validateUserId, (req, res) => {
+//   Users.update()
+//     .then()
+//     .catch();
+// });
 
 //custom middleware
 function validateUserId(req, res, next) {
