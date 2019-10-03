@@ -5,7 +5,7 @@ const Posts = require('../posts/postDb');
 
 const router = express.Router();
 
-// Endpoint to Create (POST) user - DONE
+// Endpoint to Create (POST) user - FUNCTIONAL
 router.post('/', (req, res) => {
   Users.insert(req.body)
     .then(user => res.status(201).json(user))
@@ -15,21 +15,21 @@ router.post('/', (req, res) => {
     });
 });
 
-// Endpoint to Create (POST) post by user ID - DONE
+// Endpoint to Create (POST) post by user ID - FUNCTIONAL
 router.post('/:id/posts', validateUserId, (req, res) => {
-    const postInfo = { ...req.body, user_id: req.params.id };
-  
-    Posts.insert(postInfo)
-      .then(post => {
-        res.status(210).json(post);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).json({ message: 'Error adding the post for the user' });
-      });
-  });
+  const postInfo = { ...req.body, user_id: req.params.id };
 
-// Endpoint to Retrieve (GET) users - DONE
+  Posts.insert(postInfo)
+    .then(post => {
+      res.status(210).json(post);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ message: 'Error adding the post for the user' });
+    });
+});
+
+// Endpoint to Retrieve (GET) users - FUNCTIONAL
 router.get('/', (req, res) => {
   Users.get(req.query)
     .then(users => res.status(200).json(users))
@@ -39,7 +39,7 @@ router.get('/', (req, res) => {
     });
 });
 
-// Endpoint to Retrieve (GET) user by ID - DONE
+// Endpoint to Retrieve (GET) user by ID - FUNCTIONAL
 router.get('/:id', validateUserId, (req, res) => {
   Users.getById(req.params.id)
     .then(user => {
@@ -55,7 +55,7 @@ router.get('/:id', validateUserId, (req, res) => {
     });
 });
 
-// Endpoint to Retrieve (GET) user posts - DONE
+// Endpoint to Retrieve (GET) user posts - FUNCTIONAL
 router.get('/:id/posts', validateUserId, (req, res) => {
   Users.getUserPosts(req.params.id)
     .then(posts => {
@@ -67,7 +67,7 @@ router.get('/:id/posts', validateUserId, (req, res) => {
     });
 });
 
-// Endpoint to Delete (DEL) user - DONE
+// Endpoint to Delete (DEL) user - FUNCTIONAL
 router.delete('/:id', validateUserId, (req, res) => {
   Users.remove(req.params.id)
     .then(count => {
@@ -83,7 +83,7 @@ router.delete('/:id', validateUserId, (req, res) => {
     });
 });
 
-// Endpoint to Update (PUT) user - DONE
+// Endpoint to Update (PUT) user - FUNCTIONAL
 router.put('/:id', validateUserId, (req, res) => {
   Users.update(req.params.id, req.body)
     .then(user => {
@@ -101,15 +101,31 @@ router.put('/:id', validateUserId, (req, res) => {
     });
 });
 
-//custom middleware
+// Custom Middleware
+
+// Status - FUNCTIONAL
 function validateUserId(req, res, next) {
-  next();
+  Users.getById(req.params.id)
+    .then(user => {
+      if (!user) {
+        res.status(400).json({ message: 'Invalid user ID' });
+      } else {
+        req.user = req.params.id;
+        next();
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ message: 'Error validating user ID' });
+    });
 }
 
+// Status - Not done
 function validateUser(req, res, next) {
   next();
 }
 
+// Status - Not done
 function validatePost(req, res, next) {
   next();
 }
