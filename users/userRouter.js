@@ -5,6 +5,7 @@ const Posts = require('../posts/postDb');
 
 const router = express.Router();
 
+// Endpoint to Create (POST) user - DONE
 router.post('/', (req, res) => {
   Users.insert(req.body)
     .then(user => res.status(201).json(user))
@@ -20,6 +21,7 @@ router.post('/', (req, res) => {
 //     .catch();
 // });
 
+// Endpoint to Retrieve (GET) users - DONE
 router.get('/', (req, res) => {
   Users.get(req.query)
     .then(users => res.status(200).json(users))
@@ -29,6 +31,7 @@ router.get('/', (req, res) => {
     });
 });
 
+// Endpoint to Retrieve (GET) user by ID - DONE
 router.get('/:id', validateUserId, (req, res) => {
   Users.getById(req.params.id)
     .then(user => {
@@ -44,12 +47,19 @@ router.get('/:id', validateUserId, (req, res) => {
     });
 });
 
-// router.get('/:id/posts', validateUserId, (req, res) => {
-//   Users.getUserPosts()
-//     .then()
-//     .catch();
-// });
+// Endpoint to Retrieve (GET) user posts - DONE
+router.get('/:id/posts', validateUserId, (req, res) => {
+  Users.getUserPosts(req.params.id)
+    .then(posts => {
+      res.status(200).json(posts);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ message: 'Error getting the posts for the user' });
+    });
+});
 
+// Endpoint to Delete (DEL) user - DONE
 router.delete('/:id', validateUserId, (req, res) => {
   Users.remove(req.params.id)
     .then(count => {
@@ -65,22 +75,23 @@ router.delete('/:id', validateUserId, (req, res) => {
     });
 });
 
+// Endpoint to Update (PUT) user - DONE
 router.put('/:id', validateUserId, (req, res) => {
-    Users.update(req.params.id, req.body)
-      .then(user => {
-        if (user) {
-          res.status(200).json(user);
-        } else {
-          res.status(404).json({ message: 'The hub could not be found' });
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).json({
-          message: 'Error updating the user',
-        });
+  Users.update(req.params.id, req.body)
+    .then(user => {
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json({ message: 'The hub could not be found' });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        message: 'Error updating the user',
       });
-  });
+    });
+});
 
 //custom middleware
 function validateUserId(req, res, next) {
