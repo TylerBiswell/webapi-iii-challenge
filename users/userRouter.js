@@ -24,7 +24,20 @@ router.get('/', (req, res) => {
     });
 });
 
-// router.get('/:id', validateUserId, (req, res) => {});
+router.get('/:id', validateUserId, (req, res) => {
+  Users.getById(req.params.id)
+    .then(user => {
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json({ message: 'User not found' });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ message: 'Error retrieving the user' });
+    });
+});
 
 // router.get('/:id/posts', validateUserId, (req, res) => {});
 
@@ -34,8 +47,6 @@ router.get('/', (req, res) => {
 
 //custom middleware
 function validateUserId(req, res, next) {
-  req.user = req.params.id && req.params.id;
-
   next();
 }
 
